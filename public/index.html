@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Image based tracking AR.js demo</title>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+    <script>
+      let arrayData = []
+
+      fetch("http://localhost:3000/get")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Lỗi khi gọi API");
+          }
+          return response.json();
+        })
+        .then(data => {
+          data.forEach(element => {
+            arrayData.push(element.Key)
+          });
+          const uniqueModels = {};
+
+          arrayData.forEach(item => {
+            if (item.startsWith("model")) {
+              const modelName = item.split(".")[0];
+              uniqueModels[modelName] = true; 
+            }
+          });
+
+          const result = Object.keys(uniqueModels);
+          
+          const sceneElement = document.querySelector('a-scene');
+
+          // Duyệt qua mảng 'result'
+          result.forEach(modelName => {
+            // Tạo phần tử <a-nft>
+            const aNftElement = document.createElement('a-nft');
+            aNftElement.setAttribute('type', 'nft');
+            aNftElement.setAttribute('url', `https://topcv-clone.s3.ap-southeast-1.amazonaws.com/${modelName}`);
+            aNftElement.setAttribute('smooth', 'true');
+            aNftElement.setAttribute('smoothCount', '10');
+            aNftElement.setAttribute('smoothTolerance', '.01');
+            aNftElement.setAttribute('smoothThreshold', '5');
+
+            // Tạo phần tử <a-entity> trong <a-nft>
+            const aEntityElement = document.createElement('a-entity');
+            aEntityElement.setAttribute('id', 'model-container');
+            aEntityElement.setAttribute('position', '0 0 -5');
+
+            // Tạo phần tử <a-entity> trong <a-entity>
+            const gltfEntityElement = document.createElement('a-entity');
+            gltfEntityElement.setAttribute('gltf-model', `https://topcv-clone.s3.ap-southeast-1.amazonaws.com/${modelName}.glb`);
+            gltfEntityElement.setAttribute('scale', '15 15 15');
+            gltfEntityElement.setAttribute('animation__rotate', 'property: rotation; to: 0 360 0; loop: true; dur: 10000');
+            gltfEntityElement.setAttribute('rotation', '0 0 0');
+
+            // Gắn phần tử <a-entity> vào <a-entity>
+            aEntityElement.appendChild(gltfEntityElement);
+
+            // Gắn phần tử <a-entity> vào <a-nft>
+            aNftElement.appendChild(aEntityElement);
+
+            // Gắn phần tử <a-nft> vào <a-scene>
+            sceneElement.appendChild(aNftElement);
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      
+      
+    </script>
+  </head>
+
+  <body>
+    <a-scene
+      vr-mode-ui="enabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;">
+      <a-entity camera position="0 0 0"></a-entity>
+    </a-scene>
+
+  </body>
+</html>
