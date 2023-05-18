@@ -14,9 +14,9 @@ const publicDirectoryPath = path.join(__dirname, 'public');
 app.use(express.static(publicDirectoryPath));
 
 // Định tuyến để phục vụ tệp HTML
-app.get('/', (req, res) => {
-  res.sendFile(path.join(publicDirectoryPath, 'index.html'));
-});
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(publicDirectoryPath, 'index.html'));
+// });
 
 // Khởi động máy chủ
 app.listen(port, () => {
