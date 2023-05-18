@@ -11,6 +11,8 @@ app.use(cors());
 // Đường dẫn đến thư mục chứa tệp HTML
 const publicDirectoryPath = path.join(__dirname, 'public');
 
+app.use(express.static(publicDirectoryPath));
+
 // Định tuyến để phục vụ tệp HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicDirectoryPath, 'index.html'));
